@@ -1,1 +1,143 @@
-<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=tokyo/"><a href="tokyo/">Tokyo – Présentation</a>
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Tokyo 3D</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;800;900&family=Noto+Sans+JP:wght@300;700&display=swap">
+<style>
+/* Diapo 1920x1080 mise à l'échelle ; texte à gauche, modèle Sketchfab à droite */
+:root{--night:#050511;--ink:#fff;--mist:#b9c0dd;--blue:#8fa8ff;--rose:#ff5a7a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--night);color:var(--ink);overflow:hidden;font-family:Montserrat,Arial,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:radial-gradient(ellipse at 75% 55%,#141a44 0%,var(--night) 62%)}
+
+/* zone 3D */
+.m{position:absolute;left:820px;top:0;width:1100px;height:1080px;overflow:hidden;opacity:0;transform:translateX(120px) scale(.94);transition:opacity 1s,transform 1.4s cubic-bezier(.2,.8,.2,1)}
+.m.on{opacity:1;transform:none}
+.m.out{opacity:0;transform:translateX(-160px) scale(.9);transition:opacity .6s,transform .8s cubic-bezier(.7,0,.8,.3)}
+.m iframe{position:absolute;left:0;top:-80px;width:100%;height:calc(100% + 160px);border:0}
+.blend{position:absolute;left:820px;top:0;width:1100px;height:1080px;pointer-events:none;
+  background:linear-gradient(90deg,var(--night) 0%,rgba(5,5,17,.75) 14%,rgba(5,5,17,0) 38%),
+             linear-gradient(0deg,rgba(5,5,17,.9) 0%,rgba(5,5,17,0) 22%),
+             linear-gradient(180deg,rgba(5,5,17,.7) 0%,rgba(5,5,17,0) 16%),
+             linear-gradient(270deg,rgba(5,5,17,.6) 0%,rgba(5,5,17,0) 12%)}
+.wait{position:absolute;left:1270px;top:520px;font-size:22px;letter-spacing:6px;color:var(--blue);opacity:.6}
+.shield{position:absolute;inset:0}
+
+/* texte */
+.s{position:absolute;left:140px;top:0;width:900px;height:1080px;display:flex;flex-direction:column;justify-content:center;visibility:hidden}
+.s.on{visibility:visible}
+.ln{height:2px;width:0;background:var(--blue);margin-bottom:34px;transition:width 1.2s .2s cubic-bezier(.2,.8,.2,1)}
+.s.on .ln{width:300px}
+.kj{font-family:'Noto Sans JP',sans-serif;font-weight:300;font-size:40px;letter-spacing:18px;color:var(--blue)}
+h1,h2{font-weight:900;margin:10px 0 0;line-height:.92;white-space:nowrap}
+h1{font-size:250px;letter-spacing:-6px}
+h2{font-size:118px;letter-spacing:-3px}
+.d{font-size:30px;line-height:1.45;color:var(--mist);width:700px;margin:34px 0 0;font-weight:300}
+.d b{color:var(--ink);font-weight:800}
+.by{margin-top:40px;font-size:22px;font-weight:800;letter-spacing:8px;color:var(--rose)}
+.nums{display:flex;gap:56px;margin-top:44px}
+.nums b{display:block;font-size:84px;font-weight:900;line-height:1}
+.nums span{font-size:22px;color:var(--blue);letter-spacing:2px}
+.nums .hot b{color:var(--rose)}
+.mask{display:inline-block;overflow:hidden;vertical-align:top}
+.ch{display:inline-block;transform:translateY(110%) rotate(8deg);opacity:0}
+.s.on .ch{transform:none;opacity:1;transition:transform 1s cubic-bezier(.2,.8,.2,1),opacity .6s}
+.up{opacity:0;transform:translateY(40px)}
+.s.on .up{opacity:1;transform:none;transition:opacity .9s,transform 1s cubic-bezier(.2,.8,.2,1)}
+
+/* repères fixes */
+.who{position:absolute;left:140px;top:60px;font-size:20px;font-weight:800;letter-spacing:5px;color:rgba(255,255,255,.6)}
+.cr{position:absolute;left:140px;bottom:44px;font-size:18px;color:rgba(255,255,255,.4)}
+.dots{position:absolute;left:60px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:16px}
+.dots i{width:10px;height:10px;border-radius:50%;border:2px solid #fff;opacity:.4;transition:all .4s}
+.dots i.on{background:#fff;opacity:1;transform:scale(1.3)}
+.pg{position:absolute;right:60px;bottom:44px;font-size:20px;font-weight:800;letter-spacing:4px;color:rgba(255,255,255,.6)}
+
+#fs{position:fixed;right:max(12px,env(safe-area-inset-right));top:max(10px,env(safe-area-inset-top));z-index:9;border:0;border-radius:18px;padding:9px 14px;background:rgba(255,255,255,.14);color:#fff;font:600 14px system-ui;opacity:.5}
+#tip{position:fixed;left:0;right:0;bottom:max(14px,env(safe-area-inset-bottom));text-align:center;font:500 14px system-ui;color:rgba(255,255,255,.55);transition:opacity 1s;z-index:9;pointer-events:none}
+</style></head><body>
+<div id="stage">
+  <div class="wait" id="wait">CHARGEMENT 3D…</div>
+  <div class="m" id="mA"></div><div class="m" id="mB"></div>
+  <div class="blend"></div>
+  <div id="slides"></div>
+  <div class="who" id="who"></div>
+  <div class="cr" id="cr"></div>
+  <div class="dots" id="dots"></div>
+  <div class="pg" id="pg"></div>
+  <div class="shield" id="shield"></div>
+</div>
+<button id="fs">Plein écran</button>
+<div id="tip">Touche la droite de l’écran ou glisse pour avancer</div>
+
+<script>
+const S=[
+ {m:'382ae81787234db4a8a3aa1e46696cd4',cr:'Tokyo Skytree – Nestaeric',who:'',
+  h:`<div class="kj up">東京 · 日本</div><h1 class="split">TOKYO</h1>
+  <p class="d up">Longtemps la plus grande ville du monde. Aujourd’hui 3ᵉ, derrière Jakarta et Dhaka (ONU, 2025).</p>
+  <div class="by up">ILOHA &amp; ARTHUR</div>`},
+ {m:'2bc48894d5c0496eb83d7b0eaf529499',cr:'Mont Fuji – Nate Loper',who:'ILOHA · 40 S',
+  h:`<div class="kj up">東京湾 · 関東平野</div><h2 class="split">AU BORD DU</h2><h2 class="split">PACIFIQUE</h2>
+  <p class="d up">Sur <b>Honshū</b>, la plus grande île du Japon. Dans la <b>plaine du Kantō</b> : de la place pour construire. Au fond de la <b>baie de Tokyo</b> : la mer pour commercer avec le monde.</p>`},
+ {m:'1c81991c1aa34e548096f0349defc4a6',cr:'Sangenjaya, Tokyo – RaizVR',who:'ILOHA · 40 S',
+  h:`<div class="kj up">人口</div><h2 class="split">UNE GÉANTE</h2><h2 class="split">QUI RALENTIT</h2>
+  <div class="nums up"><div><b>14 M</b><span>DANS LA VILLE</span></div><div class="hot"><b>33 M</b><span>AGGLOMÉRATION</span></div><div><b>31 M</b><span>EN 2050</span></div></div>
+  <p class="d up">Le Japon vieillit et fait peu d’enfants : de la 3ᵉ à la 7ᵉ place mondiale d’ici 2050.</p>`},
+ {m:'0b53fac684a448349220104e8309956c',cr:'Shinjuku Park Tower – aitortilla01',who:'ILOHA · 40 S → ARTHUR',
+  h:`<div class="kj up">経済</div><h2 class="split">UNE VILLE</h2><h2 class="split">MONDIALE</h2>
+  <p class="d up">Le <b>cœur économique</b> du Japon. Les sièges de <b>Sony, Mitsubishi, Hitachi</b>, l’une des plus grandes <b>Bourses</b> du monde. Au niveau de <b>New York et Londres</b>.</p>`},
+ {m:'7a8cf356b7284433b2ef6eafb3d1ad1a',cr:'Shinkansen 500 – REV0',who:'ARTHUR · 40 S',
+  h:`<div class="kj up">新幹線</div><h2 class="split">UNE VILLE</h2><h2 class="split">QUI ROULE</h2>
+  <div class="nums up"><div class="hot"><b>3,5 M</b><span>PASSAGERS/JOUR À SHINJUKU</span></div><div><b>634 m</b><span>LA SKYTREE</span></div></div>
+  <p class="d up">Des trains à la minute près, le <b>Shinkansen</b> vers tout le Japon, deux grands aéroports : <b>Haneda et Narita</b>.</p>`},
+ {m:'a210febbec4f454dbd0df1d142be06bc',cr:'Japanese Temple – Jainesh Pathak',who:'ARTHUR · 40 S',
+  h:`<div class="kj up">浅草寺 · 秋葉原</div><h2 class="split">TRADITION</h2><h2 class="split">&amp; MODERNITÉ</h2>
+  <p class="d up">D’un côté, <b>Sensō-ji</b>, le plus vieux temple de la ville. De l’autre, le carrefour de <b>Shibuya</b> et <b>Akihabara</b> : mangas, jeux vidéo et néons exportés dans le monde entier.</p>`},
+ {m:'b0a8b583e00b489a8f2d019512f0e905',cr:'Isolateur sismique – Deniz Özden',who:'ARTHUR · 45 S',
+  h:`<div class="kj up">地震</div><h2 class="split">LE DÉFI</h2><h2 class="split">DES SÉISMES</h2>
+  <div class="nums up"><div class="hot"><b>1923</b><span>SÉISME DU KANTŌ</span></div><div><b>100 000</b><span>MORTS ET PLUS</span></div></div>
+  <p class="d up">Des bâtiments posés sur des <b>isolateurs</b> comme celui-ci, qui absorbent les secousses, et des exercices d’évacuation <b>dès l’école</b>. Autre défi : le <b>vieillissement</b>.</p>`},
+ {m:'2b0e771054ab442db2f98a4495835b7d',cr:'Tokyo Tower – Zhang Shangbin · Sources : ONU, Al Jazeera, Dhaka Tribune',who:'ILOHA + ARTHUR · 30 S',
+  h:`<div class="kj up">ありがとう</div><h1 class="split" style="font-size:210px">MERCI !</h1>
+  <p class="d up">Une mégapole mondiale, riche et organisée, qui doit s’adapter aux séismes et au vieillissement de sa population.</p>
+  <div class="by up">DES QUESTIONS ?</div>`}
+];
+const stage=document.getElementById('stage'),box=document.getElementById('slides');
+function fit(){const k=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`scale(${k}) translate(-50%,-50%)`}
+S.forEach((s,k)=>{const d=document.createElement('section');d.className='s';d.innerHTML='<div class="ln"></div>'+s.h;box.appendChild(d);
+  const dot=document.createElement('i');document.getElementById('dots').appendChild(dot)});
+document.querySelectorAll('.split').forEach(h=>{let n=0;h.innerHTML=[...h.innerHTML.replace(/&amp;/g,'&')].map(c=>c===' '?' ':`<span class="mask"><span class="ch" data-n="${n++}">${c}</span></span>`).join('')});
+const url=id=>`https://sketchfab.com/models/${id}/embed?autostart=1&preload=1&autospin=0.25&transparent=1&camera=0&ui_hint=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_settings=0&ui_help=0&ui_vr=0&ui_ar=0&ui_fullscreen=0&ui_annotations=0&ui_watermark_link=0&ui_loading=0&dnt=1`;
+// deux cadres 3D en alternance : l'un sort pendant que l'autre entre ; la diapo suivante est préchargée
+let i=-1,front=document.getElementById('mA'),back=document.getElementById('mB'),pre=null;
+function frame(el,id){if(el.dataset.id===id)return;el.dataset.id=id;el.innerHTML=`<iframe allow="autoplay; fullscreen" src="${url(id)}"></iframe>`}
+function go(n){
+  if(n<0||n>=S.length||n===i)return;i=n;const s=S[n];
+  const sec=[...box.children];sec.forEach((e,k)=>{e.classList.remove('on')});
+  // animation du texte
+  const cur=sec[n];
+  cur.querySelectorAll('.ch').forEach(c=>c.style.transitionDelay=(250+c.dataset.n*70)+'ms');
+  cur.querySelectorAll('.up').forEach((u,k)=>u.style.transitionDelay=(550+k*170)+'ms');
+  void cur.offsetWidth;cur.classList.add('on');
+  // modèle 3D
+  const old=front;front=back;back=old;
+  old.classList.remove('on');old.classList.add('out');
+  frame(front,s.m);front.classList.remove('out');void front.offsetWidth;front.classList.add('on');
+  setTimeout(()=>{ if(S[i+1]) frame(back,S[i+1].m); else back.innerHTML=''; back.classList.remove('out')},900);
+  document.getElementById('who').textContent=s.who;
+  document.getElementById('cr').textContent='Modèle 3D : '+s.cr+' (Sketchfab)';
+  document.getElementById('pg').textContent=String(n+1).padStart(2,'0')+' / '+String(S.length).padStart(2,'0');
+  document.querySelectorAll('#dots i').forEach((d,k)=>d.classList.toggle('on',k===n));
+  history.replaceState(null,'','#'+(n+1));
+}
+const shield=document.getElementById('shield');
+shield.addEventListener('click',e=>go(e.clientX<innerWidth/3?i-1:i+1));
+let x0=null;addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});
+addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50){go(dx<0?i+1:i-1);e.preventDefault()}x0=null});
+addEventListener('keydown',e=>{if(['ArrowRight',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();go(i+1)}if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(i-1)}});
+document.getElementById('fs').onclick=()=>{const d=document.documentElement;try{document.fullscreenElement||document.webkitFullscreenElement?(document.exitFullscreen||document.webkitExitFullscreen).call(document):(d.requestFullscreen||d.webkitRequestFullscreen).call(d)}catch(e){}};
+setTimeout(()=>document.getElementById('tip').style.opacity=0,5000);
+addEventListener('resize',fit);fit();go(Math.min(S.length,Math.max(1,parseInt(location.hash.slice(1))||1))-1);
+</script></body></html>
